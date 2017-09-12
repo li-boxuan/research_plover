@@ -1,5 +1,5 @@
 #!/bin/bash
-# primary machine:
+# primary machine #5:
 # hkucs@202.45.128.164
 # this script should be put on the remote machine
 

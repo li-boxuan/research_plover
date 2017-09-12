@@ -1,5 +1,5 @@
 #!/bin/bash
-# remote machine:
+# remote machine #4:
 # hkucs@202.45.128.163
 # this script should be put on the remote machine
 
