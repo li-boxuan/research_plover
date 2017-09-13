@@ -9,6 +9,8 @@ cd qemu
 
 sudo killall -9 qemu-system-x86_64
 
+sleep 3
+
 sudo x86_64-softmmu/qemu-system-x86_64 -machine pc-i440fx-2.3,accel=kvm,usb=off \
 -netdev tap,id=hn0,script=/etc/qemu-ifup,downscript=/etc/qemu-ifdown,\
 colo_script=./scripts/colo-proxy-script.sh,forward_nic=eth6 -device virtio-net-pci,id=net-pci0,netdev=hn0 \

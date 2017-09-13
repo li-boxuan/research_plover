@@ -69,26 +69,32 @@ if [ "$set_libnl" = true ] ; then
     sudo ip link set up ifb0  # <= corresponds to tap device 'tap0'
     sudo tc qdisc add dev tap0 ingress
     sudo tc filter add dev tap0 parent ffff: proto ip pref 10 u32 match u32 0 0 action mirred egress redirect dev ifb0
-sleep 5
+    sleep 5
 fi
 
 # some settings in primary machine qemu monitor
 if [ "$set_primary" = true ] ; then
-    sleep 10;
     (
-        migrate_set_capability mc on # disabled by default
-        migrate_set_capability mc-disk-disable on # disk replication activated by default
-        migrate-set-mc-delay 25
-        migrate rdma:10.22.1.4:6666
-    ) | telnet 202.45.128.164 4444
-    sleep 30
+        echo migrate_set_capability mc on # disabled by default
+        echo migrate_set_capability mc-disk-disable on # disk replication activated by default
+        echo migrate-set-mc-delay 25
+        echo migrate tcp:10.22.1.9:6666
+        sleep 5
+    ) | telnet 202.45.128.162 4444
+    sleep 10
 fi
 
 # some settings in secondary machine qemu monitor
-if [ "$set_secondary" = true ] ; then
+# if [ "$set_secondary" = true ] ; then
 #    (
-#    ) | telnet 202.45.128.163 4444
-fi
+#    ) | telnet 202.45.128.168 4444
+# fi
+
+echo "=============pause begins================"
+echo "please run ./toy via vncviewer manually"
+echo "vncviewer 202.45.128.162:7"
+read -p "after toy started, press any key to continue" dummy
+echo "=============pause ends=================="
 
 ########   MYSQL ############
 if [ "$run_mysql" = true ] ; then
@@ -97,7 +103,7 @@ if [ "$run_mysql" = true ] ; then
     echo "######## start mysql and run sysbench ########"
     echo "=============================================="
     printf "\n\n"
-    # vm_ip = 10.22.1.150
+    # vm_ip = 10.22.1.15
     # start mysql server
     ssh cheng@$vm_ip "sudo killall -9 mysqld; screen -S mysql -d -m ./mysql/mysql-install/libexec/mysqld --defaults-file=./mysql/my.cnf"
 
@@ -116,7 +122,7 @@ if [ "$run_ssdb" = true ] ; then
     echo "########## start ssdb and run bench ##########"
     echo "=============================================="
     printf "\n\n"
-    # vm_ip = 10.22.1.150
+    # vm_ip = 10.22.1.15
     # start ssdb server
     ssh cheng@$vm_ip "sudo killall -9 ssdb; screen -S ssdb -d -m ./ssdb/ssdb-master/ssdb-server ./ssdb/ssdb-master/ssdb.conf"
 
@@ -136,7 +142,7 @@ if [ "$run_pgsql" = true ] ; then
     echo "######### start pgsql and run bench ##########"
     echo "=============================================="
     printf "\n\n"
-    # vm_ip = 10.22.1.150
+    # vm_ip = 10.22.1.15
     # start pgsql server
     ssh cheng@$vm_ip "sudo killall -9 postgres; ./pgsql/install/bin/pg_ctl stop -D ./pgsql/install/data; sleep 5; nohup ./pgsql/install/bin/pg_ctl start -D ./pgsql/install/data> pgsql.out 2> pgsql.err < /dev/null &"
     # see https://github.com/wangchenghku/COLO/blob/master/apps/pgsql/run
@@ -160,7 +166,7 @@ if [ "$run_mongoose" = true ] ; then
     echo "####### start mongoose and run bench #########"
     echo "=============================================="
     printf "\n\n"
-    # vm_ip = 10.22.1.150
+    # vm_ip = 10.22.1.15
     # start mongoose server
     threads=2 #default : 2
     ssh cheng@$vm_ip "sudo killall -9 mg-server server.out; cd mongoose; rm .db -rf; screen -S mongoose -d -m ./mg-server -I /usr/bin/php-cgi -t $threads"
@@ -184,7 +190,7 @@ if [ "$run_mediatomb" = true ] ; then
     echo "####### start mediatomb and run bench ########"
     echo "=============================================="
     printf "\n\n"
-    # vm_ip = 10.22.1.150
+    # vm_ip = 10.22.1.15
     # start mediatomb server
     ssh cheng@$vm_ip "sudo killall -9 mediatomb; cd mediatomb; screen -S mediatomb -d -m ./install/bin/mediatomb -m /home/cheng/mediatomb/"
     # see https://github.com/wangchenghku/COLO/blob/master/apps/mediatomb/start-server
@@ -206,7 +212,7 @@ if [ "$run_redis" = true ] ; then
     echo "######### start redis and run bench ##########"
     echo "=============================================="
     printf "\n\n"
-    # vm_ip = 10.22.1.150
+    # vm_ip = 10.22.1.15
     # start redis server
     ssh cheng@$vm_ip "sudo killall -9 redis; screen -S redis -d -m ./redis/install/bin/redis-server"
     # nothing on github
@@ -232,7 +238,7 @@ if [ "$run_tomcat" = true ] ; then
     echo "######### start tomcat and run bench #########"
     echo "=============================================="
     printf "\n\n"
-    # vm_ip = 10.22.1.150
+    # vm_ip = 10.22.1.15
     # start tomcat server
     ssh cheng@$vm_ip "sudo service tomcat7 restart;"
 
@@ -246,3 +252,5 @@ if [ "$run_tomcat" = true ] ; then
 fi
 
 echo "test done."
+
+
